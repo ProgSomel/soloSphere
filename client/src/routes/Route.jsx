@@ -3,6 +3,7 @@ import Main from "../layouts/Main";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Registration from './../pages/Registration';
+import JobDetails from "../pages/JobDetails";
 
 const router = createBrowserRouter([
     {
@@ -11,7 +12,8 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/',
-                element: <Home></Home>
+                element: <Home></Home>,
+                
             },
             {
                 path: '/login',
@@ -20,6 +22,10 @@ const router = createBrowserRouter([
             {
                 path: '/registration',
                 element: <Registration></Registration>
+            },
+            {
+                path: '/job/:id',
+                element: <JobDetails></JobDetails>
             }
         ]
     }

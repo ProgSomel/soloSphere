@@ -1,6 +1,21 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
+import PropTypes from 'prop-types';
+import JobCard from './JobCard';
+import { useEffect, useState } from "react";
+import axios from "axios";
 const TabCategories = () => {
+
+  const [jobs, setJobs] = useState([]);
+
+  useEffect(()=> {
+    const getData = async() => {
+      const {data} = await axios(`${import.meta.env.VITE_API_URL}/jobs`);
+      setJobs(data);
+    }
+    getData();
+  }, [])
+
   return (
     <div className="container px-4 mx-auto my-12">
       <Tabs>
@@ -11,26 +26,46 @@ const TabCategories = () => {
         <div className="flex justify-center items-center">
         <TabList >
             
-            <Tab>Web</Tab>
-            <Tab>Graphics</Tab>
-            <Tab>Digital Media</Tab>
+            <Tab>Web Development</Tab>
+            <Tab>Graphics Design</Tab>
+            <Tab>Digital Marketing</Tab>
           </TabList>
         </div>
 
-        <TabPanel>
-          <h2>Any content 1</h2>
+        <TabPanel className="my-12">
+          <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {
+            jobs?.filter(j=> j.category==='Web Development').map((job)=> (
+              <JobCard key={job._id} job={job}></JobCard>
+            ))
+          }
+          </div>
         </TabPanel>
         <TabPanel>
-          <h2>Any content 2</h2>
+        <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {
+            jobs?.filter(j=> j.category==='Graphics Design').map((job)=> (
+              <JobCard key={job._id} job={job}></JobCard>
+            ))
+          }
+          </div>
         </TabPanel>
         <TabPanel>
-          <h2>Any content 3</h2>
+        <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {
+            jobs?.filter(j=> j.category==='Digital Marketing').map((job)=> (
+              <JobCard key={job._id} job={job}></JobCard>
+            ))
+          }
+          </div>
         </TabPanel>
       </Tabs>
     </div>
   );
 };
 
-TabCategories.propTypes = {};
+TabCategories.propTypes = {
+  jobs: PropTypes.array
+};
 
 export default TabCategories;
