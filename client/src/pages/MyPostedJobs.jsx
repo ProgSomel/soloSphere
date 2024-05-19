@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../provider/AuthProvider";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const MyPostedJobs = () => {
   const {user} = useContext(AuthContext);
@@ -153,6 +154,7 @@ const MyPostedJobs = () => {
                           </svg>
                         </button>
 
+                        <Link to={`/jobUpdate/${job?._id}`}>
                         <button className='text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -169,6 +171,7 @@ const MyPostedJobs = () => {
                             />
                           </svg>
                         </button>
+                        </Link>
                       </div>
                     </td>
                   </tr>

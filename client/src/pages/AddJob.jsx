@@ -49,7 +49,7 @@ const AddJob = () => {
       if (data?.insertedId) {
         toast.success("Bid Successfully Done");
         form.reset();
-        navigate('/my-posted-job');
+        navigate('/my-posted-jobs');
       }
     } catch (error) {
       toast.error(error?.message);
