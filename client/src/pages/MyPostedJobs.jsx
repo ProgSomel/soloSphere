@@ -1,11 +1,30 @@
+import axios from "axios";
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../provider/AuthProvider";
+
 const MyPostedJobs = () => {
+  const {user} = useContext(AuthContext);
+
+  const [postedJobs, setPostedJobs] = useState([]);
+  useEffect(()=> {
+    const getData = async()=> {
+      const {data} = await axios(`${import.meta.env.VITE_API_URL}/jobsByBuyer/${user?.email}`);
+      setPostedJobs(data);
+    }
+    getData();
+
+  }, [user?.email])
+
+  console.log(postedJobs);
+
+
   return (
     <section className='container px-4 mx-auto pt-12'>
       <div className='flex items-center gap-x-3'>
         <h2 className='text-lg font-medium text-gray-800 '>My Posted Jobs</h2>
 
         <span className='px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full '>
-          05 Jobs
+          {postedJobs.length} Jobs
         </span>
       </div>
 
@@ -60,17 +79,19 @@ const MyPostedJobs = () => {
                   </tr>
                 </thead>
                 <tbody className='bg-white divide-y divide-gray-200 '>
-                  <tr>
+                  {
+                    postedJobs?.map((job)=> (
+                      <tr key={job._id}>
                     <td className='px-4 py-4 text-sm text-gray-500  whitespace-nowrap'>
-                      Build Dynamic Website
+                      {job?.job_title}
                     </td>
 
                     <td className='px-4 py-4 text-sm text-gray-500  whitespace-nowrap'>
-                      10/04/2024
+                      {new Date(job?.deadline).toLocaleDateString()}
                     </td>
 
                     <td className='px-4 py-4 text-sm text-gray-500  whitespace-nowrap'>
-                      $100-$200
+                      {job?.min_price}-{job?.max_price}
                     </td>
                     <td className='px-4 py-4 text-sm whitespace-nowrap'>
                       <div className='flex items-center gap-x-2'>
@@ -78,7 +99,7 @@ const MyPostedJobs = () => {
                           className='px-3 py-1 rounded-full text-blue-500 bg-blue-100/60
                            text-xs'
                         >
-                          Web Development
+                          {job?.category}
                         </p>
                       </div>
                     </td>
@@ -86,7 +107,7 @@ const MyPostedJobs = () => {
                       title=''
                       className='px-4 py-4 text-sm text-gray-500  whitespace-nowrap'
                     >
-                      Lorem ipsum, dolor si adipisicing elit. Ex, provident?..
+                      {job?.description}
                     </td>
                     <td className='px-4 py-4 text-sm whitespace-nowrap'>
                       <div className='flex items-center gap-x-6'>
@@ -126,6 +147,8 @@ const MyPostedJobs = () => {
                       </div>
                     </td>
                   </tr>
+                    ))
+                  }
                 </tbody>
               </table>
             </div>

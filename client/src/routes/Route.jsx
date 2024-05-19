@@ -4,11 +4,15 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Registration from './../pages/Registration';
 import JobDetails from "../pages/JobDetails";
+import AddJob from "../pages/AddJob";
+import ErrorPage from './../pages/ErrorPage';
+import MyPostedJobs from "../pages/MyPostedJobs";
 
 const router = createBrowserRouter([
     {
         path: '/',
         element: <Main></Main>,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [
             {
                 path: '/',
@@ -24,8 +28,16 @@ const router = createBrowserRouter([
                 element: <Registration></Registration>
             },
             {
+                path: '/add-job',
+                element: <AddJob></AddJob>
+            },
+            {
                 path: '/job/:id',
                 element: <JobDetails></JobDetails>
+            },
+            {
+                path: '/my-posted-jobs',
+                element: <MyPostedJobs></MyPostedJobs>
             }
         ]
     }
