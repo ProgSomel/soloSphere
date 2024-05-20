@@ -10,7 +10,7 @@ const JobCard = ({job}) => {
     description,
     min_price, 
     max_price,
-   
+   bid_count,
 
   } = job || {};
   return (
@@ -35,6 +35,7 @@ const JobCard = ({job}) => {
         <p className='mt-2 text-sm font-bold text-gray-600 '>
           Range: {min_price} - {max_price}
         </p>
+        <p>Bid Count: {bid_count}</p>
       </div>
     </Link>
   )

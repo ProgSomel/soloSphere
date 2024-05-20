@@ -39,7 +39,8 @@ const AddJob = () => {
         email: user?.email,
         name: user?.displayName,
         photo: user?.photoURL,
-      }
+      },
+      bid_count: 0,
     };
     try {
       const { data } = await axios.post(

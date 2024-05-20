@@ -72,7 +72,7 @@ const JobDetails = () => {
         form.reset();
       }
     } catch (error) {
-      toast.error(error.response.data);
+      toast.error(error.response?.data);
       form.reset();
     }
   };
