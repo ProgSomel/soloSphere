@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../provider/AuthProvider";
+import toast from "react-hot-toast";
 
 const MyBids = () => {
 
@@ -16,6 +17,19 @@ const MyBids = () => {
     const {data} = await axios(`${import.meta.env.VITE_API_URL}/bids/${user?.email}`);
     setBids(data);
   }
+
+
+  const handleStatus = async (id, status) => {
+    
+    try{
+      await axios.patch(`${import.meta.env.VITE_API_URL}/updateBidStatus/${id}`, {status});
+      toast.success(`Status ${status} successfully`);
+      getData();
+    }catch(err){
+      toast.error(err?.message)
+    }
+  }
+
 
 
   return (
@@ -144,7 +158,7 @@ const MyBids = () => {
                         {/* Complete Button */}
                         <button
                           disabled={bid.status !== 'In Progress'}
-                          // onClick={() => handleStatus(bid._id, 'Complete')}
+                          onClick={() => handleStatus(bid._id, 'Complete')}
                           title='Mark Complete'
                           className='text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none disabled:cursor-not-allowed'
                         >

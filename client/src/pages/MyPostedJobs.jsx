@@ -15,7 +15,7 @@ const MyPostedJobs = () => {
   }, []);
 
   const getData = async()=> {
-    const {data} = await axios(`${import.meta.env.VITE_API_URL}/jobsByBuyer/${user?.email}`);
+    const {data} = await axios(`${import.meta.env.VITE_API_URL}/jobsByBuyer/${user?.email}`, {withCredentials: true});
     setPostedJobs(data);
   }
 
