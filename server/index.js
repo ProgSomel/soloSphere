@@ -7,6 +7,24 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 const app = express();
+app.use(cookieParser());
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies?.token;
+  if (!token) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+  if (token) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).send({ message: "Unauthorized" });
+      } else {
+        req.user = decoded;
+        next();
+      }
+    });
+  }
+};
 
 const corsOptions = {
   origin: ["http://localhost:5173"],
@@ -66,8 +84,12 @@ async function run() {
     });
 
     //! Get All Jobs of Specific user
-    app.get("/jobsByBuyer/:email", async (req, res) => {
+    app.get("/jobsByBuyer/:email", verifyToken, async (req, res) => {
+      const tokenEmail = req.user?.email;
       const email = req.params.email;
+      if (tokenEmail !== email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
       const result = await jobsCollection
         .find({ "buyer.email": email })
         .toArray();
@@ -115,7 +137,7 @@ async function run() {
 
     //! bid Collection
     //! Get bids from db for user
-    app.get("/bids/:email", async (req, res) => {
+    app.get("/bids/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
       const result = await bidsCollection.find(query).toArray();
@@ -123,7 +145,7 @@ async function run() {
     });
 
     //! Get Bids from bid from DB for bid owner
-    app.get("/bid-requests/:email", async (req, res) => {
+    app.get("/bid-requests/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       const query = { "buyer.email": email };
       const result = await bidsCollection.find(query).toArray();
@@ -146,9 +168,48 @@ async function run() {
     //! Save bid Data to database
     app.post("/bid", async (req, res) => {
       const bidData = req.body;
+      //? check if there is any duplicate value in DB
+      const alreadyAdded = await bidsCollection.findOne({
+        email: bidData.email,
+        jobId: bidData.jobId,
+      });
+      if (alreadyAdded) {
+        return res.status(400).send("You already added bid for this job");
+      }
 
       const result = await bidsCollection.insertOne(bidData);
       res.send(result);
+    });
+
+    //! Pagination
+    //! Get All Jobs Data from db for pagiantion
+    app.get("/all-jobs", async (req, res) => {
+      const page = parseInt(req.query.page) - 1;
+      const size = parseInt(req.query.size);
+      const filter = req.query.filter;
+      let query = {};
+
+      if (filter) {
+        query = { category: filter };
+      }
+      console.log(page, size);
+      const result = await jobsCollection
+        .find(query)
+        .skip(page * size)
+        .limit(size)
+        .toArray();
+      res.send(result);
+    });
+    //! Get All Job Data count from db
+    app.get("/jobs-count", async (req, res) => {
+      const filter = req.query.filter;
+      let query = {};
+
+      if (filter) {
+        query = { category: filter };
+      }
+      const count = await jobsCollection.countDocuments(query);
+      res.send({ count });
     });
 
     await client.db("admin").command({ ping: 1 });
