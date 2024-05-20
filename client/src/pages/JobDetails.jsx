@@ -10,7 +10,6 @@ const JobDetails = () => {
   const { user } = useContext(AuthContext);
 
   const { id } = useParams();
-  console.log(id);
 
   const [job, setJob] = useState({});
   const [startDate, setStartDate] = useState(new Date());
@@ -27,8 +26,8 @@ const JobDetails = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if(user?.email === job?.buyer.email) {
-      return toast.error('Action not Allowed');
+    if (user?.email === job?.buyer.email) {
+      return toast.error("Action not Allowed");
     }
     const form = e.target;
     const jobId = id;
@@ -40,6 +39,7 @@ const JobDetails = () => {
     const status = "Pending";
     const job_title = job?.job_title;
     const category = job?.category;
+    const buyer = job?.buyer;
 
     if (price < parseInt(job?.min_price)) {
       return toast.error(
@@ -57,6 +57,7 @@ const JobDetails = () => {
       status,
       buyer_email,
       email,
+      buyer,
     };
     try {
       const { data } = await axios.post(
