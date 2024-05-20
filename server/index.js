@@ -178,6 +178,14 @@ async function run() {
       }
 
       const result = await bidsCollection.insertOne(bidData);
+      // Update Bid Count in Jobs Collection
+      const updateDoc = {
+        $inc:{bid_count: 1}
+      } 
+      const jobQuery = {_id: new ObjectId(bidData.jobId)}
+      const updateBidCount = await jobsCollection.updateOne(jobQuery, updateDoc);
+
+      console.log(updateBidCount);
       res.send(result);
     });
 
@@ -187,14 +195,22 @@ async function run() {
       const page = parseInt(req.query.page) - 1;
       const size = parseInt(req.query.size);
       const filter = req.query.filter;
-      let query = {};
+      const sort = req.query.sort;
+      const search = req.query.search;      
 
-      if (filter) {
-        query = { category: filter };
+      let query = {
+        job_title: {$regex: search, $options: 'i'},
+      };
+
+      if (filter) {query.category = filter}
+
+      let options = {};
+      if(sort) {
+        options = {sort: {deadline: sort === 'asc'? 1 : -1}}
       }
-      console.log(page, size);
+
       const result = await jobsCollection
-        .find(query)
+        .find(query, options)
         .skip(page * size)
         .limit(size)
         .toArray();
@@ -203,11 +219,15 @@ async function run() {
     //! Get All Job Data count from db
     app.get("/jobs-count", async (req, res) => {
       const filter = req.query.filter;
-      let query = {};
+    
+      const search = req.query.search;      
 
-      if (filter) {
-        query = { category: filter };
-      }
+      let query = {
+        job_title: {$regex: search, $options: 'i'},
+      };
+
+      if (filter) {query.category = filter}
+
       const count = await jobsCollection.countDocuments(query);
       res.send({ count });
     });
