@@ -5,9 +5,12 @@ import { AuthContext } from "../provider/AuthProvider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const JobDetails = () => {
   const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
+
 
   const { id } = useParams();
 
@@ -60,8 +63,8 @@ const JobDetails = () => {
       buyer,
     };
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/bid`,
+      const { data } = await axiosSecure.post(
+        `/bid`,
         bidData
       );
       if (data?.insertedId) {
@@ -69,7 +72,8 @@ const JobDetails = () => {
         form.reset();
       }
     } catch (error) {
-      toast.error(error?.message);
+      toast.error(error.response.data);
+      form.reset();
     }
   };
 
@@ -131,6 +135,7 @@ const JobDetails = () => {
                 id="price"
                 type="text"
                 name="price"
+                required
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md   focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>
